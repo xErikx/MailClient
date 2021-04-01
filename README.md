@@ -1,0 +1,1 @@
+A simple Mail Client Project

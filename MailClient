@@ -1,0 +1,23 @@
+1) Read about SMTP (for sending).  POP3, IMAP (what is the diffrence?) . Email protocols.
+
+2) Open a mail.ru email account for our testings
+
+3) Read a bit about Ubuntu 20.04. - about Linux system
+
+4) Download VMWare WorkStation. - For Linux system - give him 2 CPU and 4 gb RAM to work properly
+ 
+5) Download and Install Ubuntu 20.04 - https://linuxhint.com/install_ubuntu_vmware_workstation
+
+6) install sublime/Intellij on Ubuntu.
+
+-----------------------------------------------------------------------------------------------
+
+Let's Email Client. 
+2 options - 
+1) send email - email address, subject, body. 
+2) read received email - download all NEW emails from server (mail.ru) and store on your harddisk. (eml format?) - {email_address, subject, body} (store as json)
+
+OOP - 
+1) Contacts - email address, name.
+2) Email - Reply, Delete, Print.
+3) Email Subclasses - Spam, Facebook, Google and etc... 

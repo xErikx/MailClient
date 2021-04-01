@@ -29,3 +29,11 @@ msg.attach(MIMEText(message, "plain"))
 text = msg.as_string()
 
 server.sendmail("test.mail974@mail.ru", "chelovek.prostodushnyy@mail.ru", text)
+
+
+def main():
+	pass
+
+	
+if __name__ == '__main__':
+	main()

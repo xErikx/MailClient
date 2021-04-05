@@ -60,7 +60,7 @@ class User:
 					print("Either the password or the nickname are incorrect")
 					self.nickname = input("Enter your nickname")
 					self.__password = input("Enter your password")
-				
+
 
 
 
@@ -69,8 +69,8 @@ class User:
 
 		# ask user if register or login 
 
-		print("Would You like to register or login?", + "\n", \
-			"if you want to register press `r`", "\n" \
+		print("Would You like to register or login? \n",
+			"if you want to register press `r` \n"
 			"if you want to login press `l`")
 
 		# user's choice
@@ -101,11 +101,16 @@ class Email:
 	def __init__(self, user):
 		self.user = user
 
-	def creating_email_object():
+	# user's email and password to login into server
+	def email_server_login(self):
 		#user's email adress for sending and receiving
 		self.mail_adress = self.user.email_address
 		print(f"The mail will be sent from {self.mail_adress} adress") 
 		self.__email_password = input("Enter your email password to login to server: ")
+
+	# email object to for send() function
+	def creating_email_object(self):
+		
 		self.to_addr = input("Enter the address where to sent: ")
 		self.subject = input("What's the subject?: ")
 		self.body = input("Print the body: ")
@@ -113,43 +118,45 @@ class Email:
 
 # creating server class for further communication
 class Server:
-	def __init__(self, ip="smtp.mail.ru", port=465, email):
+	def __init__(self, email, ip="smtp.mail.ru", port=465):
 		self.ip = ip
 		self.port = port
 		self.email = email
 
 	# server connection function
 	def server_connection(self):
-		server = smtplib.SMTP_SSL(self.ip, self.port)
+		self.server = smtplib.SMTP_SSL(self.ip, self.port)
 		print("connected to server")
 
-		server.ehlo()
+		self.server.ehlo()
 		print("started server")
 
-		server.login(email.mail_adress, email.__email_password)
+		self.email.email_server_login()
+
+		self.server.login(email.mail_adress, email.__email_password)
 		print("logged in")
 
-		
+
 
 	# sending fucntion for the server
 	def server_mail_send(self):
 		# creating multipart for our email
-		msg = MIMEMultipart()
+		self.msg = MIMEMultipart()
 
 		# address of the receiver
-		msg["From"] = email.mail_adress
+		self.msg["From"] = email.mail_adress
 
 		# address of the sender
-		msg["To"] = email.to_addr	 
+		self.msg["To"] = email.to_addr	 
 
 		# the subject of the email
-		msg["Subject"] = email.subject
+		self.msg["Subject"] = email.subject
 
 		# attaching the text of the email
-		msg.attach(MIMEText(email.body, "plain"))
+		self.msg.attach(MIMEText(email.body, "plain"))
 
 		# formatting email as str to send
-		text = msg.as_string()
+		self.text = msg.as_string()
 
 		# eventual email send
-		server.sendmail(email.mail_adress, email.to_addr, text)
+		self.server.sendmail(email.mail_adress, email.to_addr, text) 

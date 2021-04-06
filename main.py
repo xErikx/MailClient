@@ -1,4 +1,6 @@
+# import ipdb; ipdb.set_trace()
 from Classes import User, load_config, save_config, Email, Server
+
 
 
 def main():
@@ -11,18 +13,14 @@ def main():
 	# user's login/registration
 	user.connect()					# 3)
 
-	# creating mail login and password to connect to server
-	email_object = Email(user)	# 4)
-
-	#creating server object
-	server = Server(email_object)		# 4)
-
-	# starting server
-	server.server_connection()			# 4)
+	# creating server object and connecting to it
+	server = Server(user)			# 4)
+	server.server_connection()
 
 	# Action loop trigger
 	trigger = True
 
+	# send/recv action loop
 	while trigger:						# 5)
 
 		print("Select from options: \n",
@@ -38,8 +36,10 @@ def main():
 			trigger = False
 
 		elif user_choice == "s":
-			server.email_object.creating_email_object()
-			server.server_mail_send()	
+			# creating email object
+			email_object = Email(user, server)
+			email_object.creating_email_object()
+			email_object.server.server_mail_send(email_object.multipart_mail())	
 
 		elif user_choice == "r":
 			pass

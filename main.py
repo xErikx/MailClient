@@ -38,9 +38,9 @@ def main():
 		elif user_choice == "s":
 			# creating email object
 			email_object = Email(user, server)	# 6)
-			email_object.creating_email_object()
-			mail = email_object.multipart_mail()
-			server.server_mail_send(email_object.to_addr, mail)	
+			email_object.creating_email_object() # 7)
+			mail = email_object.multipart_mail() # 7)
+			server.server_mail_send(email_object.to_addr, mail)	# 8)
 
 		elif user_choice == "r":
 			pass

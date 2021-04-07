@@ -5,13 +5,8 @@ from email import encoders
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
+import hashlib
 
-
-
-# creating and saving configuration data for users in json format
-def save_config(data):
-	with open("users_json_config.json", "w") as json_config_file:
-		json.dump(json_config_file, data)
 
 
 # loading users json configuration file
@@ -20,6 +15,14 @@ def load_config():
 		data = json.load(json_config_file)
 
 	return data	
+
+
+# creating and saving configuration data for users in json format
+def save_config(data):
+	with open("users_json_config.json", "w") as json_config_file:
+		json.dump(json_config_file, data)
+
+
 
 
 # creating User class		
@@ -35,12 +38,25 @@ class User:
 
 
 		self.nickname = input("Please enter your nickname: ")
-		self.__password = input("Please enter your password: ")
+		self.password = input("Please enter your password: ")
+
+		# hashing our password
+		self.bytes_password = str.encode(self.password)
+		self.hashed_password = hashlib.sha1(self.bytes_password)
+		# our password hashed
+		self.hex_dig = self.hashed_password.hexdigest()
+
 		self.email_address = input("Enter your mail address which will be used for email client: ")
-		self.__email_address_password = input("Enter your email password to login to server: ")
+		self.email_address_password = input("Enter your email password to login to server: ")
+
+		# hashing our password
+		self.bytes_email_password = str.encode(self.email_address_password)
+		self.hashed_email_password = hashlib.sha1(self.bytes_email_password)
+		# our password hashed
+		self.hex_email_dig = self.hashed_email_password.hexdigest()
 
 		# adding user to configuration
-		self.users_config["users"].append({"nickname": self.nickname, "password": self.__password, "email_address": self.email_address, "email_address_password": self.__email_address_password})
+		self.users_config["users"].append({"nickname": self.nickname, "password": self.hex_dig, "email_address": self.email_address, "email_address_password": self.hex_email_dig})
 
 
 	def login(self):
@@ -55,21 +71,33 @@ class User:
 		else:
 
 			# user's password input 
-			self.__password = input("Enter your password")
+			self.password = input("Enter your password")
+
+			# hashing our password
+			self.bytes_password = str.encode(self.password)
+			self.hashed_password = hashlib.sha1(self.bytes_password)
+			# our password hashed
+			self.hex_dig = self.hashed_password.hexdigest()
 
 			# if nickname is in the list
 			for name in self.users_config["users"]:
 
-				if self.nickname == name["nickname"] and self.__password == name["password"]:
+				if self.nickname == name["nickname"] and self.hex_dig == name["password"]:
 
 					print("The nickname and password are correct")
 					print(f"Hi {self.nickname}!")
 					break
 
-				elif self.nickname == name["nickname"] and self.__password != name["password"]:
+				elif self.nickname == name["nickname"] and self.hex_dig != name["password"]:
 
 					print("Your password is incorrect, please enter correct password")
-					self.__password = self.__password = input("Enter your password")
+					self.password = input("Enter your password")
+
+					# hashing our password
+					self.bytes_password = str.encode(self.password)
+					self.hashed_password = hashlib.sha1(self.bytes_password)
+					# our password hashed
+					self.hex_dig = self.hashed_password.hexdigest()
 
 
 
@@ -169,7 +197,7 @@ class Server:
 		self.server.ehlo()
 		print("started server")
 
-		self.server.login(self.user.email_address, "kohoioki11")
+		self.server.login(self.user.email_address, self.user.email_address_password)
 		print("logged in")
 
 

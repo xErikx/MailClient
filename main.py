@@ -26,7 +26,7 @@ def main():
 		print("Select from options: \n",
 			"To send mail press `s` \n",
 			"To receieve mail press `r` \n",
-			"To exit the programm type `!exit")
+			"To exit the programm type `!exit`")
 
 		user_choice = input(": ")
 
@@ -37,9 +37,10 @@ def main():
 
 		elif user_choice == "s":
 			# creating email object
-			email_object = Email(user, server)
+			email_object = Email(user, server)	# 6)
 			email_object.creating_email_object()
-			email_object.server.server_mail_send(email_object.multipart_mail())	
+			mail = email_object.multipart_mail()
+			server.server_mail_send(email_object.to_addr, mail)	
 
 		elif user_choice == "r":
 			pass
@@ -49,3 +50,12 @@ def main():
 
 if __name__ == '__main__':
 	main() 
+
+# # sending fucntion for the server
+# 	def server_mail_send(self, to, msg):
+# 		self.to = to
+# 		self.msg = msg
+
+# 		# eventual email send
+# 		self.server.sendmail(self.user.email_address, self.to, self.msg) 
+# 		print("Mail send!")

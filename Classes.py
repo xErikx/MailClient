@@ -135,21 +135,22 @@ class Email:
 		self.msg = MIMEMultipart()
 
 		# address of the receiver
-		self.msg["From"] = self.sorce.email_adress
+		self.msg["From"] = self.source
 
 		# address of the sender
-		self.msg["To"] = user.to_addr	 
+		self.msg["To"] = self.to_addr	 
 
 		# the subject of the email
-		self.msg["Subject"] = email.subject
+		self.msg["Subject"] = self.subject
 
 		# attaching the text of the email
 		self.msg.attach(MIMEText(self.body, "plain"))
 
 		# formatting email as str to send
-		self.text = msg.as_string()
+		self.text = self.msg.as_string()
 
 		return self.text
+
 
 
 # creating server class for further communication
@@ -168,13 +169,16 @@ class Server:
 		self.server.ehlo()
 		print("started server")
 
-		self.server.login(self.user.email_address, self.user.__email_address_password)
+		self.server.login(self.user.email_address, "kohoioki11")
 		print("logged in")
 
 
 
 	# sending fucntion for the server
-	def server_mail_send(self, msg):
+	def server_mail_send(self, to, msg):
+		self.to = to
+		self.msg = msg
 
 		# eventual email send
-		self.server.sendmail(self.msg["From"], self.msg["To"], self.msg) 
+		self.server.sendmail(self.user.email_address, self.to, self.msg) 
+		print("Mail send!")

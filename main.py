@@ -13,6 +13,8 @@ def main():
 	# user's login/registration
 	user.connect()					# 3)
 
+	save_config(configuration)
+
 	# creating server object and connecting to it
 	server = Server(user)			# 4)
 	server.server_connection()
@@ -45,7 +47,7 @@ def main():
 		elif user_choice == "r":
 			pass
 			
-	save_config(configuration)
+
 
 
 if __name__ == '__main__':

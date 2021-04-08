@@ -20,8 +20,8 @@ def load_config():
 # creating and saving configuration data for users in json format
 def save_config(data):
 	with open("users_json_config.json", "w") as json_config_file:
-		json.dump(json_config_file, data)
-
+		json.dump(data, json_config_file)
+		json_config_file.close
 
 
 
@@ -61,43 +61,48 @@ class User:
 
 	def login(self):
 		# user's input
-		self.nickname = input("Enter your nickname")
+		self.nickname = input("Enter your nickname: ")
 
 
 		# checking if the user's nickname is in the json list "users"
-		if self.nickname not in self.users_config["users"]:
-			print("Your nickname is incorrect, please insert correct nickname")
-			self.nickname = input("Enter your nickname")
-		else:
+		for user_nickname in self.users_config["users"]:
 
-			# user's password input 
-			self.password = input("Enter your password")
+			if self.nickname != user_nickname["nickname"]:
 
-			# hashing our password
-			self.bytes_password = str.encode(self.password)
-			self.hashed_password = hashlib.sha1(self.bytes_password)
-			# our password hashed
-			self.hex_dig = self.hashed_password.hexdigest()
+				print("Your nickname is incorrect, please insert correct nickname")
+				self.nickname = input("Enter your nickname: ")
 
-			# if nickname is in the list
-			for name in self.users_config["users"]:
+			else:
 
-				if self.nickname == name["nickname"] and self.hex_dig == name["password"]:
+				# user's password input 
+				self.password = input("Enter your password: ")
 
-					print("The nickname and password are correct")
-					print(f"Hi {self.nickname}!")
-					break
+				# hashing our password
+				self.bytes_password = str.encode(self.password)
+				self.hashed_password = hashlib.sha1(self.bytes_password)
+				# our password hashed
+				self.hex_dig = self.hashed_password.hexdigest()
+				print(self.hex_dig)
 
-				elif self.nickname == name["nickname"] and self.hex_dig != name["password"]:
+				# if nickname is in the list
+				for name in self.users_config["users"]:
 
-					print("Your password is incorrect, please enter correct password")
-					self.password = input("Enter your password")
+					if self.nickname == name["nickname"] and self.hex_dig == name["password"]:
 
-					# hashing our password
-					self.bytes_password = str.encode(self.password)
-					self.hashed_password = hashlib.sha1(self.bytes_password)
-					# our password hashed
-					self.hex_dig = self.hashed_password.hexdigest()
+						print("The nickname and password are correct")
+						print(f"Hi {self.nickname}!")
+						break
+
+					elif self.nickname == name["nickname"] and self.hex_dig != name["password"]:
+
+						print("Your password is incorrect, please enter correct password")
+						self.password = input("Enter your password: ")
+
+						# hashing our password
+						self.bytes_password = str.encode(self.password)
+						self.hashed_password = hashlib.sha1(self.bytes_password)
+						# our password hashed
+						self.hex_dig = self.hashed_password.hexdigest()
 
 
 
@@ -113,13 +118,13 @@ class User:
 			"If you want to close the programm type `!exit`")
 
 		# user's choice
-		choice = str(input())
+		choice = str(input(": "))
 
 		# loop for executing the login/register process,
 		# and in case if user write's wrong initial,
 		# programm will work untill it executes properly
 
-		while choice:
+		while True:
 
 			# register option
 			if choice == "r":
@@ -191,13 +196,20 @@ class Server:
 
 	# server connection function
 	def server_connection(self):
+
 		self.server = smtplib.SMTP_SSL(self.ip, self.port)
 		print("connected to server")
 
 		self.server.ehlo()
 		print("started server")
 
-		self.server.login(self.user.email_address, self.user.email_address_password)
+		# placing correct email adress and email password to login to server
+		for name in self.user.users_config["users"]:
+
+			if self.user.nickname == name["nickname"] and self.user.hex_dig == name["password"]:
+				self.server.login(name["email_address"], "kohoioki11")
+
+		# self.server.login(self.email_address, self.mail_password)
 		print("logged in")
 
 

@@ -339,6 +339,28 @@ class User:
 
 class Email:
 
+	"""
+    A class used to represent Email object
+
+    ...
+
+    Attributes
+    ----------
+    msg: Email object which eventually will be send
+	msg["From"]: user's email address, from which the mail will be sent in str() format inside the mail
+	msg["To"]:  email address destination to send in str() format inside the mail 
+	msg["Subject"]: email's subject in str() format inside the mail
+	text: The main and complete email to send
+
+    Methods
+    -------
+    creating_email_object:
+        Email object create function
+    multipart_mail:
+		Multipart Email object function
+
+    """
+
 	def __init__(self, user, server):
 		self.user = user
 		self.server = server
@@ -416,7 +438,40 @@ class Email:
 
 # creating server class for further communication
 class Server:
+
+	"""
+    A class used to represent Server object
+
+    ...
+
+    Attributes
+    ----------
+    msg: Email object which eventually will be send
+	msg["From"]: user's email address, from which the mail will be sent in str() format inside the mail
+	msg["To"]:  email address destination to send in str() format inside the mail 
+	msg["Subject"]: email's subject in str() format inside the mail
+	text: The main and complete email to send
+
+    Methods
+    -------
+    server_connection:
+        server connection function
+    server_mail_send:
+		sending function for server
+
+    """
+
 	def __init__(self, user, ip="smtp.mail.ru", port=465):
+
+        """
+        Parameters
+        ----------
+        user: user's parameter for using user creds
+        ip: server ip for connection
+        port: server port for connection
+
+        """
+
 		self.user = user
 		self.ip = ip
 		self.port = port

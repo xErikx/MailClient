@@ -13,6 +13,8 @@ def main():
 	# user's login/registration
 	user.connect()					# 3)
 
+	
+
 	# creating server object and connecting to it
 	server = Server(user)			# 4)
 	server.server_connection()
@@ -43,7 +45,7 @@ def main():
 			server.server_mail_send(email_object.to_addr, mail)	# 8)
 
 		elif user_choice == "r":
-			pass
+			server.recv_server_connect()
 			
 
 	save_config(configuration)
@@ -52,12 +54,4 @@ def main():
 
 if __name__ == '__main__':
 	main() 
-
-# # sending fucntion for the server
-# 	def server_mail_send(self, to, msg):
-# 		self.to = to
-# 		self.msg = msg
-
-# 		# eventual email send
-# 		self.server.sendmail(self.user.email_address, self.to, self.msg) 
-# 		print("Mail send!")
+	

@@ -12,6 +12,8 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import imaplib
+import email
 
 
 # loading users json configuration file
@@ -461,20 +463,21 @@ class Server:
 
     """
 
-	def __init__(self, user, ip="smtp.mail.ru", port=465):
+	def __init__(self, user, ip="smtp.mail.ru", port=465, recv_server="imap.mail.ru"):
 
-        """
-        Parameters
-        ----------
-        user: user's parameter for using user creds
-        ip: server ip for connection
-        port: server port for connection
+		"""
+  		Parameters
+  		----------
+  		user: user's parameter for using user creds
+  		ip: server ip for connection
+  		port: server port for connection
 
-        """
+		"""
 
 		self.user = user
 		self.ip = ip
 		self.port = port
+		self.recv_server = recv_server
 		
 
 	# server connection function
@@ -531,3 +534,47 @@ class Server:
 		# eventual email send
 		self.server.sendmail(self.user.email_address, self.to, self.msg) 
 		print("Mail send!")
+
+	# receiving email server connection
+	def recv_server_connect(self):
+
+		self.email = self.user.email_address
+		self.password = self.user.decrypted_email_password	
+
+		mail = imaplib.IMAP4_SSL(self.recv_server)
+		mail.login(self.email, self.password)
+
+		mail.list()
+		mail.select("inbox")
+
+		result, data = mail.search(None, "ALL")
+
+		ids = data[0]
+		id_list = ids.split()
+		latest_email_id = id_list[-1]
+
+		result, data = mail.fetch(latest_email_id, "(RFC822)")
+		raw_email = data[0][1]
+		raw_email_string = raw_email.decode('utf-8')
+
+
+		email_message = email.message_from_string(raw_email_string)
+
+		print(40 * "--" + "\n")
+
+		print(f"Message is to: {email_message['To']}")
+		print(f"Message is from: {email_message['From']}")
+		print(f"Date: {email_message['Date']}")
+		print(f"Subject: {email_message['Subject']}")
+		print(f"Message ID: {email_message['Message-Id']}")
+
+		print(40 * "--" + "\n")
+
+
+		if email_message.is_multipart():
+		    for payload in email_message.get_payload():
+		        body = payload.get_payload(decode=True).decode('utf-8')
+		        print(body)
+		else:
+		    body = email_message.get_payload(decode=True).decode('utf-8')
+		    print(body)

@@ -18,7 +18,6 @@ import email
 
 # loading users json configuration file
 def load_config():
-
 	"""
     Loading configuration function:
 
@@ -31,7 +30,6 @@ def load_config():
     
     ----------
     	Returns data as a container of user's creds
-
 	"""
 
 	with open ("users_json_config.json") as json_config_file:
@@ -42,7 +40,6 @@ def load_config():
 
 # creating and saving configuration data for users in json format
 def save_config(data):
-
 	"""
     Saving configuration function:
 
@@ -51,8 +48,6 @@ def save_config(data):
 
     Args:
 	    data (str): user's creds
-	        
-
 	"""
 
 	with open("users_json_config.json", "w") as json_config_file:
@@ -63,7 +58,6 @@ def save_config(data):
 
 # creating User class		
 class User:
-
 	"""
     A class used to represent User in email client
 
@@ -88,12 +82,9 @@ class User:
 		User's login to client
     connect:
 		User's options for logins/registration to client
-
-
     """
 
 	def __init__(self, users_config):
-
 		"""
         Parameters
         ----------
@@ -104,8 +95,6 @@ class User:
 		users_config: user config file
 		key: key for encryption/decryption of the email address password
 		salt: salt option for generation and use of the same key in the future
-
-
         """
 
 		self.users_config = users_config
@@ -115,8 +104,7 @@ class User:
 	# initial functions wich will ask the user if they want to
 	# Login/Register	
 
-	def registration(self):
-		
+	def registration(self):		
 		"""
 	    Registration function:
 
@@ -132,8 +120,6 @@ class User:
 	    self.email_address_password: ser's mail account password to login to mail server
 	    self.password1: provided password, encoded for the further use as email password encryption/decryption key
 	    self.key: key to decrypt and encrypt mail password
-	 
-
     	"""
 
 		# user's nickname attribute
@@ -184,7 +170,6 @@ class User:
 
 	# logging in dunction for email client login
 	def login(self):
-
 		"""
 	    Login function:
 
@@ -199,9 +184,7 @@ class User:
 	    self.email_address: user's email address to connect to server
 	    self.email_address_password: ser's mail account password to login to mail server
 	    self.password1: provided password, encoded for the further use as email password encryption/decryption key
-	    self.key: key to decrypt and encrypt mail password
-	 
-
+	    self.key: key to decrypt and encrypt mail password 
     	"""
 
 		# user's input
@@ -248,8 +231,6 @@ class User:
 											 salt=self.salt,
 											 iterations=100000,
 											 backend = default_backend())
-
-						# import ipdb; ipdb.set_trace()
 						
 						# this will be our key to decrypt and encrypt mail password
 						self.key = base64.urlsafe_b64encode(self.kdf.derive(self.password1))
@@ -278,15 +259,9 @@ class User:
 				
 				# our password hashed
 				self.hex_dig = self.hashed_password.hexdigest()
-			
-
-		
-
-
 
 	# main Register, Login function
 	def connect(self):
-
 		"""
 	    Connect function:
 
@@ -297,8 +272,6 @@ class User:
         
 	    ----------
 	    choice: user's choice variable
-	 
-
     	"""
 
 		# ask user if register or login 
@@ -340,7 +313,6 @@ class User:
 
 
 class Email:
-
 	"""
     A class used to represent Email object
 
@@ -360,7 +332,6 @@ class Email:
         Email object create function
     multipart_mail:
 		Multipart Email object function
-
     """
 
 	def __init__(self, user, server):
@@ -394,7 +365,6 @@ class Email:
 
 	# creating the mail to pass it to server.send() function and send the email
 	def multipart_mail(self):
-
 		"""
 	    Multipart Email object function:
 
@@ -412,8 +382,6 @@ class Email:
 
 		Returns:
             Returns text varialbe as complete email to send
-	 
-
     	"""
 
 		# creating multipart for our email
@@ -440,7 +408,6 @@ class Email:
 
 # creating server class for further communication
 class Server:
-
 	"""
     A class used to represent Server object
 
@@ -460,7 +427,6 @@ class Server:
         server connection function
     server_mail_send:
 		sending function for server
-
     """
 
 	def __init__(self, user, ip="smtp.mail.ru", port=465, recv_server="imap.mail.ru"):
@@ -471,6 +437,7 @@ class Server:
   		user: user's parameter for using user creds
   		ip: server ip for connection
   		port: server port for connection
+  		recv_server: server imap address for receiving connection
 
 		"""
 
@@ -482,7 +449,6 @@ class Server:
 
 	# server connection function
 	def server_connection(self):
-
 		"""
 	    Server connection function:
 
@@ -493,8 +459,6 @@ class Server:
         
 	    ----------
 	   	server: server variable, providing all further actions with the server
-	 
-
     	"""
 
 		self.server = smtplib.SMTP_SSL(self.ip, self.port)
@@ -511,7 +475,6 @@ class Server:
 
 	# sending fucntion for the server
 	def server_mail_send(self, to, msg):
-
 		"""
 		Server send function:
 
@@ -524,7 +487,6 @@ class Server:
 	    Args:
 	        to (str): destination parameter
 	        msg (str): email parameter.
-
 	    """
 		self.to = to
 		self.msg = msg
@@ -537,27 +499,57 @@ class Server:
 
 	# receiving email server connection
 	def recv_server_connect(self):
+		"""
+		Server receive function:
 
+		Server receive function which receives email from custom email address
+		using IMAP and receiving it from Mail.ru server
+
+		Attributes:
+	
+	   		server: server variable, providing all further actions with the server
+	   		mail: server connection variable
+
+
+	    Args:
+	        recv_server (str): server imap address for receiving connection
+	    """
+
+	    # user's email address
 		self.email = self.user.email_address
+
+		# user's email address password
 		self.password = self.user.decrypted_email_password	
 
+		# connection to server
 		mail = imaplib.IMAP4_SSL(self.recv_server)
 		mail.login(self.email, self.password)
 
 		mail.list()
 		mail.select("inbox")
 
+		# getting the email data as list, consisting of emails
 		result, data = mail.search(None, "ALL")
 
+		# saving email id's 
 		ids = data[0]
+
+		# spliting the list of email ids
 		id_list = ids.split()
+
+		# saving the last(newest) id of the email in box
 		latest_email_id = id_list[-1]
 
+		# getting the latest(newest) email in the box
 		result, data = mail.fetch(latest_email_id, "(RFC822)")
+
+		# saving unprocessed email in raw_email variable
 		raw_email = data[0][1]
+
+		# decoding unprocessed email and saving it
 		raw_email_string = raw_email.decode('utf-8')
 
-
+		# getting the titles from the email(To, From, Date, Subject, Body, Message-ID)
 		email_message = email.message_from_string(raw_email_string)
 
 		print(40 * "--" + "\n")
@@ -570,7 +562,8 @@ class Server:
 
 		print(40 * "--" + "\n")
 
-
+		# checking if the email is multipart, 
+		# if so we print each component, else, just printing out context
 		if email_message.is_multipart():
 		    for payload in email_message.get_payload():
 		        body = payload.get_payload(decode=True).decode('utf-8')

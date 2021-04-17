@@ -1,10 +1,5 @@
 
 import json
-import smtplib
-from email import encoders
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
 import hashlib
 import base64
 import os
@@ -12,8 +7,6 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-import imaplib
-import email
 
 
 # loading users json configuration file
@@ -56,7 +49,6 @@ def save_config(data):
 
 
 
-# creating User class		
 class User:
 	"""
     A class used to represent User in email client
@@ -166,7 +158,8 @@ class User:
 		
 
 		# adding user's creds to configuration file
-		self.users_config["users"].append({"nickname": self.nickname, "password": self.hex_dig, "email_address": self.email_address, "email_address_password": base64.encodestring(self.crypted_email_password).decode()})
+		self.users_config["users"].append({"nickname": self.nickname, "password": self.hex_dig,
+		 "email_address": self.email_address, "email_address_password": base64.encodestring(self.crypted_email_password).decode()})
 
 	# logging in dunction for email client login
 	def login(self):
@@ -238,7 +231,8 @@ class User:
 						self.crypter = Fernet(self.key)
 
 						# decrypted email account password
-						self.decrypted_email_password = self.crypter.decrypt(base64.decodestring(user_nickname["email_address_password"].encode())).decode()
+						self.decrypted_email_password = \
+						self.crypter.decrypt(base64.decodestring(user_nickname["email_address_password"].encode())).decode()
 
 						# user's email address to login to email server
 						self.email_address = user_nickname[ "email_address"]
@@ -307,267 +301,6 @@ class User:
 				break
 
 			else:
-				print("Please enter valid choice")
+				print("Please enter valid choice: ")
 				choice = str(input())
 
-
-
-class Email:
-	"""
-    A class used to represent Email object
-
-    ...
-
-    Attributes
-    ----------
-    msg: Email object which eventually will be send
-	msg["From"]: user's email address, from which the mail will be sent in str() format inside the mail
-	msg["To"]:  email address destination to send in str() format inside the mail 
-	msg["Subject"]: email's subject in str() format inside the mail
-	text: The main and complete email to send
-
-    Methods
-    -------
-    creating_email_object:
-        Email object create function
-    multipart_mail:
-		Multipart Email object function
-    """
-
-	def __init__(self, user, server):
-		self.user = user
-		self.server = server
-
-	# email object to for send() function
-	def creating_email_object(self):
-
-		"""
-	    Email object create function:
-
-	    Function which creates email object to send it 
-	    to a specific email address as user chooses
-
-	    Attributes:
-        
-	    ----------
-	    self.source: user's email address, from which the mail will be sent
-		self.to_addr: email address destination to send
-		self.subject: = email's subject
-		self.body: = email's body
-	 
-
-    	"""
-		
-		self.source = self.user.email_address
-		self.to_addr = input("Enter the address where to sent: ")
-		self.subject = input("What's the subject?: ")
-		self.body = input("Print the body: ")
-
-	# creating the mail to pass it to server.send() function and send the email
-	def multipart_mail(self):
-		"""
-	    Multipart Email object function:
-
-	    Function which multiparts email object to send it 
-	    to a specific email address as user chooses
-
-	    Attributes:
-        
-	    ----------
-	   	msg: Email object which eventually will be send
-		msg["From"]: user's email address, from which the mail will be sent in str() format inside the mail
-		msg["To"]:  email address destination to send in str() format inside the mail 
-		msg["Subject"]: email's subject in str() format inside the mail
-		text: The main and complete email to send
-
-		Returns:
-            Returns text varialbe as complete email to send
-    	"""
-
-		# creating multipart for our email
-		self.msg = MIMEMultipart()
-
-		# address of the receiver
-		self.msg["From"] = self.source
-
-		# address of the sender
-		self.msg["To"] = self.to_addr	 
-
-		# the subject of the email
-		self.msg["Subject"] = self.subject
-
-		# attaching the text of the email
-		self.msg.attach(MIMEText(self.body, "plain"))
-
-		# formatting email as str to send
-		self.text = self.msg.as_string()
-
-		return self.text
-
-
-
-# creating server class for further communication
-class Server:
-	"""
-    A class used to represent Server object
-
-    ...
-
-    Attributes
-    ----------
-    msg: Email object which eventually will be send
-	msg["From"]: user's email address, from which the mail will be sent in str() format inside the mail
-	msg["To"]:  email address destination to send in str() format inside the mail 
-	msg["Subject"]: email's subject in str() format inside the mail
-	text: The main and complete email to send
-
-    Methods
-    -------
-    server_connection:
-        server connection function
-    server_mail_send:
-		sending function for server
-    """
-
-	def __init__(self, user, ip="smtp.mail.ru", port=465, recv_server="imap.mail.ru"):
-
-		"""
-  		Parameters
-  		----------
-  		user: user's parameter for using user creds
-  		ip: server ip for connection
-  		port: server port for connection
-  		recv_server: server imap address for receiving connection
-
-		"""
-
-		self.user = user
-		self.ip = ip
-		self.port = port
-		self.recv_server = recv_server
-		
-
-	# server connection function
-	def server_connection(self):
-		"""
-	    Server connection function:
-
-	    Function which connects email client to the email server
-	    and logs in user's email adress to server for further actions
-
-	    Attributes:
-        
-	    ----------
-	   	server: server variable, providing all further actions with the server
-    	"""
-
-		self.server = smtplib.SMTP_SSL(self.ip, self.port)
-		print("connected to server")
-
-		self.server.ehlo()
-		print("started server")
-
-		
-		self.server.login(self.user.email_address, self.user.decrypted_email_password)
-		print("logged in")
-
-
-
-	# sending fucntion for the server
-	def server_mail_send(self, to, msg):
-		"""
-		Server send function:
-
-		Server send function which sends the email to the custom email address
-
-		Attributes:
-	
-	   		server: server variable, providing all further actions with the server
-
-	    Args:
-	        to (str): destination parameter
-	        msg (str): email parameter.
-	    """
-		self.to = to
-		self.msg = msg
-
-
-
-		# eventual email send
-		self.server.sendmail(self.user.email_address, self.to, self.msg) 
-		print("Mail send!")
-
-	# receiving email server connection
-	def recv_server_connect(self):
-		"""
-		Server receive function:
-
-		Server receive function which receives email from custom email address
-		using IMAP and receiving it from Mail.ru server
-
-		Attributes:
-	
-	   		server: server variable, providing all further actions with the server
-	   		mail: server connection variable
-
-
-	    Args:
-	        recv_server (str): server imap address for receiving connection
-	    """
-
-	    # user's email address
-		self.email = self.user.email_address
-
-		# user's email address password
-		self.password = self.user.decrypted_email_password	
-
-		# connection to server
-		mail = imaplib.IMAP4_SSL(self.recv_server)
-		mail.login(self.email, self.password)
-
-		mail.list()
-		mail.select("inbox")
-
-		# getting the email data as list, consisting of emails
-		result, data = mail.search(None, "ALL")
-
-		# saving email id's 
-		ids = data[0]
-
-		# spliting the list of email ids
-		id_list = ids.split()
-
-		# saving the last(newest) id of the email in box
-		latest_email_id = id_list[-1]
-
-		# getting the latest(newest) email in the box
-		result, data = mail.fetch(latest_email_id, "(RFC822)")
-
-		# saving unprocessed email in raw_email variable
-		raw_email = data[0][1]
-
-		# decoding unprocessed email and saving it
-		raw_email_string = raw_email.decode('utf-8')
-
-		# getting the titles from the email(To, From, Date, Subject, Body, Message-ID)
-		email_message = email.message_from_string(raw_email_string)
-
-		print(40 * "--" + "\n")
-
-		print(f"Message is to: {email_message['To']}")
-		print(f"Message is from: {email_message['From']}")
-		print(f"Date: {email_message['Date']}")
-		print(f"Subject: {email_message['Subject']}")
-		print(f"Message ID: {email_message['Message-Id']}")
-
-		print(40 * "--" + "\n")
-
-		# checking if the email is multipart, 
-		# if so we print each component, else, just printing out context
-		if email_message.is_multipart():
-		    for payload in email_message.get_payload():
-		        body = payload.get_payload(decode=True).decode('utf-8')
-		        print(body)
-		else:
-		    body = email_message.get_payload(decode=True).decode('utf-8')
-		    print(body)

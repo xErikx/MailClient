@@ -1,6 +1,6 @@
-# import ipdb; ipdb.set_trace()
-from Classes import User, load_config, save_config, Email, Server
-
+from Classes import User, load_config, save_config
+from Server_class import Server
+from Email_class import Email
 
 
 def main():

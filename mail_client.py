@@ -12,12 +12,12 @@ server.ehlo()
 print("started server")
 
 
-server.login("test.mail974@mail.ru", "kohoioki11")
+server.login("sample_mail", "password")
 print("logged in")
 
 msg = MIMEMultipart()
-msg["From"] = "test.mail974@mail.ru"
-msg["To"] = "chelovek.prostodushnyy@mail.ru"	 #"df-fdf-2004@mail.ru"
+msg["From"] = "sample_mail"
+msg["To"] = "sample_mail"	 #"df-fdf-2004@mail.ru"
 msg["Subject"] = "Testing"
 
 with open("message.txt", "r") as f:
@@ -28,7 +28,7 @@ msg.attach(MIMEText(message, "plain"))
 
 text = msg.as_string()
 
-server.sendmail("test.mail974@mail.ru", "chelovek.prostodushnyy@mail.ru", text)
+server.sendmail("sample_mail", "sample_mail", text)
 
 
 if __name__ == '__main__':

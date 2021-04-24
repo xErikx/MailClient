@@ -1,7 +1,0 @@
-Hi, I'm just testing the smpt protocol
-
-so don't mention this message.
-
-Best Regards,
-
-Erik.
